@@ -104,6 +104,7 @@ class Parcheesi:
         self.b94  = 0
         self.b95  = 0
         self.b96  = 0
+        self.b97  = 0
 
 
         self.board = [self.b01,self.b02,self.b03,self.b04,self.b05,self.b06,self.b07,self.b08,self.b09,self.b10,self.b11,self.b12,self.b13,self.b14,self.b15,
@@ -111,7 +112,7 @@ class Parcheesi:
         self.b33,self.b34,self.b35,self.b36,self.b37,self.b38,self.b39,self.b40,self.b41,self.b42,self.b43,self.b44,self.b45,self.b46,self.b47,self.b48,self.b49,
         self.b50,self.b51,self.b52,self.b53,self.b54,self.b55,self.b56,self.b57,self.b58,self.b59,self.b60,self.b61,self.b62,self.b63,self.b64,self.b65,self.b66,self.b67,self.b68,
         self.b69,self.b70,self.b71,self.b72,self.b73,self.b74,self.b75,self.b76,self.b77,self.b78,self.b79,self.b80,self.b81,self.b82,self.b83,self.b84,self.b85,self.b86,
-        self.b87,self.b88,self.b89,self.b90,self.b91,self.b92,self.b93,self.b94,self.b95,self.b96]
+        self.b87,self.b88,self.b89,self.b90,self.b91,self.b92,self.b93,self.b94,self.b95,self.b96,self.b97]
         # Posicion cuando consiguen un 5 para salir
         self.starting_point = [0,51,34,17]
         self.posicion_actual = [0,51,34,17]
@@ -125,12 +126,15 @@ class Parcheesi:
         self.turno = 0
         self.jugadores = ["Jugador #1", "Jugador #2", "Jugador #3", "Jugador #4"]
         # Movimentos de jugador 
-        self.cir_player1 = Circle(Point(312.5,90),5)
-        self.cir_player2 = Circle(Point(90,187.5),5)
-        self.cir_player3 = Circle(Point(187.5,410),5)
-        self.cir_player4 = Circle(Point(410,312.5),5)
+        self.ubicacion = [Point(312.5,90),Point(90,187.5),Point(187.5,410),Point(410,312.5)]
+        self.cir_player1 = Circle(self.ubicacion[0],5)
+        self.cir_player2 = Circle(self.ubicacion[1],5)
+        self.cir_player3 = Circle(self.ubicacion[2],5)
+        self.cir_player4 = Circle(self.ubicacion[3],5)
 
         self.piezas = [self.cir_player1,self.cir_player2,self.cir_player3,self.cir_player4]
+
+        self.conteo = [0,0,0,0]
 
 
         
@@ -164,8 +168,11 @@ class Parcheesi:
 
         # Dado Buttom
         buttom_dado = Rectangle(Point(440,-80),Point(580,-20))
+        buttom_dado.setFill(color_rgb(7,160,195))
         buttom_dado.draw(self.win)
         text_dado = Text(Point(510,-50),'TIRAR DADOS')
+        text_dado.setStyle('bold')
+        text_dado.setFill('white')
         text_dado.draw(self.win)
 
         rec1 = Rectangle(Point(0,0), Point(175,175))
@@ -392,6 +399,7 @@ class Parcheesi:
         print("ESTADO DEL JUEGO \n")
         for x in range(4):
             print(self.jugadores[x] + ' Se encuentra en la posicion: ', self.posicion[x])
+            print('Conteo: ', self.conteo)
 
         print(self.board)
         print("------------------------------------------------------------------\n")
@@ -404,7 +412,7 @@ class Parcheesi:
         """
         
         texto_turno = Text(Point(200,-50),'')
-        texto_output = Text(Point(250,550),'')
+        texto_output = Text(Point(250,570),'')
         texto_output.draw(self.win)
         texto_turno.draw(self.win)
 
@@ -418,7 +426,7 @@ class Parcheesi:
             y = click.getY()
 
             while not 440 <= x <= 580 or not -80 <= y <= -20:
-                print(self.jugadores[self.turno] + ' haga click en el boton para tirar los dados.\n')
+                # print(self.jugadores[self.turno] + ' haga click en el boton para tirar los dados.\n')
                 click = self.win.getMouse()
                 x = click.getX()
                 y = click.getY()
@@ -433,10 +441,10 @@ class Parcheesi:
                     
                     self.board[self.starting_point[self.turno]] = self.board[self.starting_point[self.turno]] + 1
                     self.movimientos_graficos()
-                    texto_output.setText('\nSus resultados fueron ' + str(dado1) + ' y ' + str(dado2) +' asi que usted logro entrar al tablero')
+                    texto_output.setText("\n" + self.jugadores[self.turno] +'\nSus resultados fueron ' + str(dado1) + ' y ' + str(dado2) +' asi que usted logro entrar al tablero')
 
                 else: # Si no consigue un 5 se queda en la posicion 0
-                    texto_output.setText('\nSus resultados fueron ' + str(dado1) + ' y ' +  str(dado2) + ' lo que significa que usted no logro conseguir un 5 \n en ninguno de los dos dados y la suma de ambos tampoco resultaba ser 5. \n Usted se mantuvo en la posicion 0')
+                    texto_output.setText("\n" + self.jugadores[self.turno] +'\nSus resultados fueron ' + str(dado1) + ' y ' +  str(dado2) + ' lo que significa que usted no logro conseguir un 5 \n en ninguno de los dos dados y la suma de ambos tampoco resultaba ser 5. \n Usted se mantuvo en la posicion 0')
             else: # Si ya no esta en la posicion 0 
                 suma_dados = dado1 + dado2
                 # Se mueve la pieza en el board
@@ -468,22 +476,38 @@ class Parcheesi:
                 try:
                     self.board[self.posicion_actual[self.turno]] = self.board[self.posicion_actual[self.turno]] + 1
                 except IndexError:
-                    break
+                    print("no se pudo anadir")
 
 
-                texto_output.setText("\nSus resultados fueron " +  str(dado1) +  " y " +  str(dado2) +  " lo que significa que usted se movio " +  str(suma_dados) +  "veces.")
+                texto_output.setText("\n" + self.jugadores[self.turno] + "\nSus resultados fueron " +  str(dado1) +  " y " +  str(dado2) +  " lo que significa que usted se movio " +  str(suma_dados) +  " veces.")
 
             print('\n Posicion Actual Value: ',self.posicion_actual[self.turno],'\n')
 
             
-            self.estado_juego()
+            
             # Si hay ganador, el juego se acaba. Si no lo hay cambia el turno.
             if self.posicion[self.turno] >= 72:
-                ganador = True
+                self.conteo[self.turno] = self.conteo[self.turno] + 1
+                self.posicion_actual[self.turno] = self.starting_point[self.turno]
+                self.posicion[self.turno] = 0
+                # self.piezas[self.turno].undraw()
+                self.piezas[self.turno] = Circle(self.ubicacion[self.turno],5)
+                self.piezas[self.turno].setFill(self.color_player[self.turno])
+                # self.piezas[self.turno].draw(self.win)
+                if self.conteo[self.turno] == 4:
+                    ganador = True
+                    print('hoal')
+                else:
+                    if self.turno == 3:
+                        self.turno = 0
+                    else:
+                        self.turno = self.turno + 1
             elif self.turno == 3:
                 self.turno = 0
             else:
                 self.turno = self.turno + 1
+            # Se imprime un estado del juego
+            self.estado_juego()
 
         texto_output.setText('')
         texto_ganador = Text(Point(250,550),"FELICIDADES " + self.jugadores[self.turno] + " USTED HA GANADO")
@@ -549,28 +573,58 @@ class Parcheesi:
         """
         Funcion que se encarga de mover las piezas cuando ya completaron la vuelta y estan en la recta final
         """
+
         if self.turno == 0:
             if 69 <= self.posicion_actual[self.turno] <76: # For the win 1
                 self.piezas[self.turno].move(0,20)
             elif 76 <= self.posicion_actual[self.turno]:
-                self.piezas[self.turno].move(0,100)
+                if self.conteo[self.turno] == 0:
+                    self.piezas[self.turno].move(20,80)
+                elif self.conteo[self.turno] == 1:
+                    self.piezas[self.turno].move(40,80)
+                elif self.conteo[self.turno] == 2:
+                    self.piezas[self.turno].move(40,60)
+                else:
+                    self.piezas[self.turno].move(20,60)
         elif self.turno == 1:
             if 90 <= self.posicion_actual[self.turno] <97: # For the win 2
                 self.piezas[self.turno].move(20,0)
             elif 97 <= self.posicion_actual[self.turno]:
-                self.piezas[self.turno].move(100,0)
+                if self.conteo[self.turno] == 0:
+                    self.piezas[self.turno].move(80,-20)
+                elif self.conteo[self.turno] == 1:
+                    self.piezas[self.turno].move(80,-40)
+                elif self.conteo[self.turno] == 2:
+                    self.piezas[self.turno].move(60,-40)
+                else:
+                    self.piezas[self.turno].move(60,-20)
         elif self.turno == 2:
             if 83 == self.posicion_actual[self.turno]: # For the win 3
                 self.piezas[self.turno].move(0,-20)
             elif 84 <= self.posicion_actual[self.turno] <90: # For the win 3
                 self.piezas[self.turno].move(0,-20)
             elif 90 <= self.posicion_actual[self.turno]:
-                self.piezas[self.turno].move(0,-100)
+                if self.conteo[self.turno] == 0:
+                    self.piezas[self.turno].move(-20,-80)
+                elif self.conteo[self.turno] == 1:
+                    self.piezas[self.turno].move(-40,-80)
+                elif self.conteo[self.turno] == 2:
+                    self.piezas[self.turno].move(-40,-60)
+                else:
+                    self.piezas[self.turno].move(-20,-60)
         elif self.turno == 3:
             if 76 <= self.posicion_actual[self.turno] <83: # For the win 4
                 self.piezas[self.turno].move(-20,0)
             elif 83 <= self.posicion_actual[self.turno]:
-                self.piezas[self.turno].move(-100,0) 
+                if self.conteo[self.turno] == 0:
+                    self.piezas[self.turno].move(-80,20)
+                elif self.conteo[self.turno] == 1:
+                    self.piezas[self.turno].move(-80,40)
+                elif self.conteo[self.turno] == 2:
+                    self.piezas[self.turno].move(-60,40)
+                else:
+                    self.piezas[self.turno].move(-60,20)
+                
                     
 
             
