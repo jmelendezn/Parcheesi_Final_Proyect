@@ -17,4 +17,6 @@
 
 
 ## ***Todo***
-- [] El juego solo funciona con una sola pieza. Ahora hay que hacer que funcione con las cuatro piezas de cada jugador.
+- [x] El juego solo funciona con una sola pieza. Ahora hay que hacer que funcione con las cuatro piezas de cada jugador.
+- [] El juego ya funciona con las cuatro piezas de cada jugador. Ahora se necesita tener las cuatros 16 piezas en el tablero a la misma vez
+- [] El juego se desarrollo de manera sencilla, se necesita implementar todas las reglas del juego
